@@ -341,13 +341,6 @@ $$\log L\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \bo
 
 .footnote[https://eigen.tuxfamily.org/, https://autodiff.github.io/]
 
----
-
-class: inverse, middle, center
-
-![](figures/newton.png)
-
-Isaac and his cousin Fred Quasi-Newton inventing the rainbow.
 
 ---
 
