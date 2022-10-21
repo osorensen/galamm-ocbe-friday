@@ -61,23 +61,26 @@ $$\mathbf{y}_{j} = \boldsymbol{\Lambda} \boldsymbol{\eta}_{j} + \boldsymbol{\eps
 
 ## Item Response Theory
 
-Kind of factor analysis with binomial measurements:
+- Kind of factor analysis with binomial measurements $\mathbf{y}_{j} \sim \text{Binom}\left(\boldsymbol{\mu}_{j}\right)$.
 
-$$\mathbf{y}_{j} \sim \text{Binomial}\left(\boldsymbol{\mu}_{j}\right)$$ 
+- Predictor for item $i$, subject $j$
 
-Predictor
+$$\nu_{ij} = a_{i} (\eta_{j} - b_{i})$$
 
-$$\boldsymbol{\nu}_{j} = \log\left(\frac{\boldsymbol{\mu}_{j}}{\mathbf{1} - \boldsymbol{\mu}_{j}}\right) =  \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\Lambda} \boldsymbol{\eta}_{j}, \qquad \boldsymbol{\eta}_{j} \sim N\left(\mathbf{0}, \boldsymbol{\Psi}\right)$$
 
+
+<center>
+<img src="figures/irt.png" width=400>
+</center>
 
 ---
 
 
 ## Structural Equation Models
 
-
-![](figures/sem.png)
-
+<center>
+<img src="figures/sem.png" width=450>
+</center>
 
 
 ---
@@ -105,13 +108,9 @@ $$\boldsymbol{\eta}_{j} = \mathbf{B}\boldsymbol{\eta}_{j} + \boldsymbol{\Gamma} 
 
 ## Generalized Linear Mixed Models
 
-- Measurement model for response
+- Response $\mathbf{y}_{j}$ from exponential family with mean $\boldsymbol{\mu}_{j}$
 
-$$\mathbf{y}_{j} = \boldsymbol{\mu}_{j} + \boldsymbol{\epsilon}_{j}$$
-
-with $\boldsymbol{\epsilon}_{j}$ distributed according to exponential family.
-
-- Mean of $\mathbf{y}_{j}$ depends on latent variables $\boldsymbol{\eta}_{j}$
+- $\boldsymbol{\mu}_{j}$ depends on latent variables $\boldsymbol{\eta}_{j}$
 
 $$\boldsymbol{\mu}_{j} = g^{-1}\left(\mathbf{X}_{j} \boldsymbol{\beta} + \mathbf{Z}_{j} \boldsymbol{\eta}_{j}\right),  \qquad \boldsymbol{\eta}_{j} \sim N\left(\mathbf{0}, \boldsymbol{\Psi}\right)$$
 
@@ -136,11 +135,11 @@ All models mentioned above, and many more, are special cases of GLLAMM.
 
 - $L$ grouping levels. $M_{l}$ latent variables at $l$th level.
 
-Linear predictor:
+Linear predictor for observational unit $i$
 
 $$\nu_{i} = \mathbf{x}_{i}^{T}\boldsymbol{\beta} + \sum_{l=2}^{L} \sum_{m=1}^{M_{l}} \eta_{m}^{(l)} \mathbf{z}_{mi}^{(l)}{}^{T} \boldsymbol{\lambda}_{m}^{(l)}$$
 
-Structural model
+Structural model for cluster $j$
 
 $$\boldsymbol{\eta}_{j} = \mathbf{B}\boldsymbol{\eta}_{j} +\boldsymbol{\Gamma} \mathbf{w}_{j} + \boldsymbol{\zeta}_{j}, \qquad \boldsymbol{\zeta}_{j} \sim N\left(\mathbf{0}, \boldsymbol{\Psi}\right)$$
 
@@ -150,11 +149,11 @@ $$\boldsymbol{\eta}_{j} = \mathbf{B}\boldsymbol{\eta}_{j} +\boldsymbol{\Gamma} \
 
 ## GLLAMM
 
-Lots of applications in the social sciences, but there are some limitations:
+Lots of applications, but some limitations:
 
 1. Strictly parametric.
 
-2. Crossed random effects not really supported.
+2. New results on mixed model estimation can be used to speed up the algorithms, particularly for crossed random effects.
 
 3. Stata based. Limited availability in R.
 
@@ -193,13 +192,322 @@ Extension of GLLAMM framework to incorporate smooth functions of observed variab
 
 - Linear predictor
 
-$$\nu_{i} = \sum_{s=1}^{S}f_{s}\left(\mathbf{x}_{i}\right) + \sum_{l=2}^{L} \sum_{m=1}^{M_{l}} \eta_{m}^{(l)} \mathbf{z}_{mi}^{(l)}{}^{T} \boldsymbol{\lambda}_{m}^{(l)}$$
+$$\nu_{i} = \color{red}{\sum_{s=1}^{S}f_{s}\left(\mathbf{x}_{i}\right)} + \sum_{l=2}^{L} \sum_{m=1}^{M_{l}} \eta_{m}^{(l)} \mathbf{z}_{mi}^{(l)}{}^{T} \boldsymbol{\lambda}_{m}^{(l)}$$
 
 - Structural model
 
-$$\boldsymbol{\eta}_{j} = \mathbf{B}\boldsymbol{\eta}_{j} + \mathbf{h}\left( \mathbf{w}_{j} \right) + \boldsymbol{\zeta}_{j}, \qquad \boldsymbol{\zeta}_{j} \sim N\left(\mathbf{0}, \boldsymbol{\Psi}\right)$$
+$$\boldsymbol{\eta}_{j} = \mathbf{B}\boldsymbol{\eta}_{j} + \color{red}{\mathbf{h}\left( \mathbf{w}_{j} \right)} + \boldsymbol{\zeta}_{j}, \qquad \boldsymbol{\zeta}_{j} \sim N\left(\mathbf{0}, \boldsymbol{\Psi}\right)$$
 
-Smooth functions $f_{s}(\cdot)$ and $\mathbf{h}(\cdot)$ are linear combinations of known basis functions (regression splines), with squared second derivative penalization.
+- $f_{s}(\cdot)$ and $\mathbf{h}(\cdot)$ composed of regression splines. Second derivative penalization.
+
+
+---
+
+## GLLAMMs with Semiparametric Functions
+
+- Semiparametric model can be represented by a standard GLLAMM.
+
+  - Part of basis in penalty nullspace becomes fixed effects.
+
+  - Part of basis in penalty range space becomes random effects.
+
+  - Inverse smoothing parameters become new variance components.
+
+--
+
+- Gets a bit nasty. In the words of reviewer 3
+
+> ... the notation in this paper is so dreadful that I considered declining to review it. If the notation is not thoroughly cleaned up in a revision, I will not review it again. I only begin to touch the surface in these comments.
+(...) The lack of consistency seems almost sadistic, as if it was done to purposively make even simple expressions inscrutable! 
+
+
+
+
+---
+
+class: inverse, middle, center
+
+# Anyhow
+
+
+
+
+---
+
+class: inverse, middle, center
+
+# Thing 2
+
+"New results on mixed model estimation can be used to speed up the algorithms, particularly for crossed random effects."
+
+
+---
+
+class: inverse, middle, center
+
+# A Scalable Algorithm
+
+Laplace approximation, sparse matrices, and autodiff to the rescue
+
+---
+
+# Likelihood
+
+- Transform latent variables through $\boldsymbol{\Lambda} \mathbf{u} = \boldsymbol{\zeta}$, where $\boldsymbol{\Lambda}^{T}\boldsymbol{\Lambda} = \boldsymbol{\Psi}$, so $\mathbf{u} \sim N(\mathbf{0}, \phi_{1} \mathbf{I})$. $\phi_{1}$ is a reference level, since the dispersion may differ between observations.
+
+
+--
+
+
+- The marginal likelihood, integrating over $\mathbf{u} \in \mathbb{R}^{r}$ is
+
+$$L\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \boldsymbol{\phi}\right)  = \\ \left(2 \pi \phi_{1}\right)^{-r/2}  \int_{\mathbb{R}^{r}} \exp\left( g\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \boldsymbol{\phi}, \mathbf{u}\right) \right) \text{d} \mathbf{u}$$
+
+where
+
+$$g\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \boldsymbol{\phi}, \mathbf{u}\right) = \\ 
+\mathbf{y}^{T} \mathbf{W}\boldsymbol{\nu} - d\left(\boldsymbol{\nu}\right)^{T} \mathbf{W}\mathbf{1}_{n}  + c\left(\mathbf{y}, \boldsymbol{\phi}\right)^{T} \mathbf{1}_{n} - \left(2\phi_{1}\right)^{-1} \left\| \mathbf{u} \right\|^{2}$$
+
+- Just like a generalized linear mixed model, except that everything depends on the factor loadings and coefficients for regressions between latent variables. Doubly nonlinear in a sense.
+
+
+
+
+---
+
+## Laplace Approximation
+
+- First goal, maximize the exponent in the integrand at fixed parameters.
+
+$$\tilde{\mathbf{u}} = \underset{\mathbf{u}}{\text{argmax}} \left\{ g\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \phi, \mathbf{u}\right) \right\}$$
+
+--
+
+- Analytical expressions for gradient and Hessian
+
+$$\nabla g = \boldsymbol{\Lambda}^{T} \mathbf{Z}^{T} \mathbf{W}\left( \mathbf{y} - \boldsymbol{\mu} \right)  - \left(1/\phi_{1}\right)\mathbf{u}$$
+
+$$\mathbf{H}_{g} =-  \boldsymbol{\Lambda}^{T} \mathbf{Z}^{T} \mathbf{V}  \mathbf{Z} \boldsymbol{\Lambda} - \left(1/\phi_{1}\right) \mathbf{I}_{r}$$
+
+- Full Newton method:
+
+$$ \mathbf{H}_{g}^{(k)}\boldsymbol{\delta}^{(k)} =  \nabla g^{(k)}$$
+
+and then updating $\mathbf{u}^{(k+1)} = \mathbf{u}^{(k)} + \gamma \boldsymbol{\delta}^{(k)}$ for some adaptively chosen stepsize $\gamma$.
+
+
+
+---
+
+## Laplace Approximation
+
+- Linear system
+
+$$\mathbf{H}_{g}^{(k)}\boldsymbol{\delta}^{(k)} = \nabla g^{(k)}$$
+
+- Hessian $\mathbf{H}_{g}^{(k)}$ is typically **really really sparse**. Sparse Cholesky factorization
+
+$$\mathbf{L}^{(k)} \mathbf{D}^{(k)} \mathbf{L}^{(k)}{}^{T} = \mathbf{P} \mathbf{H}_{g}^{(k)}\mathbf{P}^{T}$$
+
+- Fill-reducing permutation $\mathbf{P}$ only depends on location of structural zeros, so can be computed off-line.
+
+--
+
+- The system we solve, $Ax=b$, is
+
+$$\underbrace{\mathbf{L}^{(k)} \mathbf{D}^{(k)} \mathbf{L}^{(k)T} \mathbf{P}}_{A} \underbrace{\boldsymbol{\delta}^{(k)}}_{x} = \underbrace{\mathbf{P} \left( \boldsymbol{\Lambda}^{T} \mathbf{Z}^{T} \mathbf{W}^{(k)} \left( \mathbf{y} - \boldsymbol{\mu}^{(k)}\right)- (1/\phi_{1}^{(k)}) \mathbf{u}^{(k)}\right)}_{b}$$
+
+
+---
+
+## Log-Likelihood
+
+- At convergence, plug in conditional modes $\tilde{\mathbf{u}}$ and update terms that depend on $\mathbf{u}$.
+
+- Laplace approximate marginal log-likelihood
+
+$$\log L\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \boldsymbol{\phi}\right) = \\ \mathbf{y}^{T} \mathbf{W}\boldsymbol{\nu} - d\left(\boldsymbol{\nu}\right)^{T} \mathbf{W}\mathbf{1}_{n}  + c\left(\mathbf{y}, \boldsymbol{\phi}\right)^{T} \mathbf{1}_{n} - \left(2\phi_{1}\right)^{-1} \left\| \tilde{\mathbf{u} }\right\|^{2} - (1/2)\log \text{tr}\left(\mathbf{D}\right)$$
+
+---
+
+# Maximizing the Marginal Likelihood
+
+- Extend C++ library `Eigen` to allow sparse matrix computations with dual types from `autodiff`, rather than `double`/`float`.
+  
+- Exact gradients of log-likelihood wrt all parameters plugged into quasi-Newton L-BFGS-B algorithm to find maximum.
+
+- At convergence, exact Hessian computed using second-order dual numbers.
+
+
+.footnote[https://eigen.tuxfamily.org/, https://autodiff.github.io/]
+
+---
+
+class: inverse, middle, center
+
+![](figures/newton.png)
+
+Isaac and his cousin Fred Quasi-Newton inventing the rainbow.
+
+---
+
+class: inverse, middle, center
+
+
+# Thing 3
+
+Stata based. Limited availability in R.
+
+
+---
+
+## Implementation
+
+- R package `galamm`, so far only at https://lcbc-uio.github.io/galamm/.
+
+- Supports a wide range of models, including
+
+  - Mixed response types
+  
+  - Crossed random effects
+  
+  - Semiparametric terms
+  
+  - Heteroscedasticity
+  
+
+- User-friendly API will come when smoke has cleared.
+
+
+---
+
+class: inverse, middle, center
+
+# Application Examples
+
+
+---
+
+
+
+# Coupled Cognitive Change
+
+<center>
+<img src="figures/coupled_change.png" width=600>
+<br>
+<br>
+<br>
+<img src="figures/g_level_change.png" width=600>
+</center>
+
+
+
+
+---
+
+# Coupled Cognitive Change
+
+
+
+---
+
+# Effect of Socioeconomic Status on the Brain
+
+- A Lancet report has suggested that low socioeconomic status is a risk factor for late life dementia, through its impact on brain structure.
+
+- Lifespan brain development is pretty nonlinear. Example below shows volume of hippocampus. How does socioeconomic status interact with this curve?
+
+<center>
+<img src="figures/mri.png" width=400>
+</center>
+
+---
+
+# Effect of Socioeconomic Status on the Brain
+
+
+
+
+- Latent socioeconomic status defined by income and education level. For children, parents' values were used.
+
+- The model:
+
+$$y_{i} = \mathbf{d}_{\text{s},i}'\boldsymbol{\beta}_{\text{s}} + d_{h,i}\left\{ \mathbf{x}_{\text{h},i}' \boldsymbol{\beta}_{\text{h}} + f\left(a_{i}\right)\right\} +  \eta_{1} \mathbf{z}_{i}' \boldsymbol{\lambda} + d_{\text{h},i} \eta_{2} + \epsilon_{i}$$
+
+- Terms:
+
+  - $\mathbf{d}_{s,i}$, dummy for socioeconomic status items.
+  - $d_{h,i}$: dummy for hippocampus volume.
+  - $f(a_{i})$ effect of age on hippocampus volume.
+  - $\eta_{1}$: latent socioeconomic status.
+  - $\eta_{2}$: random intercept for hippocampus volume.
+  - $\epsilon_{i}$: residual varying between groups of variables (income, education, hippocampus).
+  
+
+---
+
+# Effect of Socioeconomic Status on the Brain
+
+
+- The model:
+
+$$y_{i} = \mathbf{d}_{\text{s},i}'\boldsymbol{\beta}_{\text{s}} + d_{h,i}\left\{ \mathbf{x}_{\text{h},i}' \boldsymbol{\beta}_{\text{h}} + f\left(a_{i}\right)\right\} +  \eta_{1} \mathbf{z}_{i}' \boldsymbol{\lambda} + d_{\text{h},i} \eta_{2} + \epsilon_{i}$$
+
+- When $i$ is a hippocampus measurement, $\mathbf{z}_{i} = (1,a_{i})'$ and $\boldsymbol{\lambda}$ contains offset and interaction effect of latent socioeconomic status on hippocampus volume.
+
+
+---
+
+# Effect of Socioeconomic Status on the Brain
+
+.pull-left[
+
+- We found no evidence of interaction effect, but some evidence of an offset effect.
+
+- Consistent with the hypothesis that socioeconomic status mainly affects early-life brain developement. Or just lack of power.
+
+] 
+.pull-right[
+![](figures/ses.png)
+]
+
+
+
+---
+
+class: inverse, middle, center
+
+# Further Work
+
+---
+
+## Further Work
+
+- Study the accuracy of Laplace approximation through importance sampling.
+
+- Let smooth functions depend on latent variables. Leads to $\chi^{2}$ distributed random variables.
+
+- Optimize code and create descent API.
+
+- Utilize the framework to answer research questions in cognitive neuroscience.
+
+
+Interested in working with similar applications? Postdoc position will soon be announced. Contact me for details.
+
+
+
+---
+
+class: inverse, middle, center
+
+# Some Additional Details
+
+---
+
+class: inverse, middle, center
+
+# Transformation from GALAMM to GLLAMM
+
 
 
 ---
@@ -287,252 +595,6 @@ p1 +
 
 .footnote[Dates back to: Kimeldorf, G. S., & Wahba, G. (1970). A Correspondence Between Bayesian Estimation on Stochastic Processes and Smoothing by Splines. Annals of Mathematical Statistics, 41(2), 495–502. https://doi.org/10.1214/aoms/1177697089
 ]
-
----
-
-## GLLAMMs with Semiparametric Functions
-
-- We show that GLLAMMs with semiparametric functions can be transformed to classical parametric GLLAMMs and estimated by the same method.
-
----
-
-## GLLAMMs with Semiparametric Functions
-
-
-- Part of basis in penalty nullspace becomes fixed effects.
-
-- Part of basis in penalty rangespace becomes random effects.
-
-- Inverse smoothing parameter becomes just another variance component to be estimated.
-
---
-
-- Gets a bit nasty. In the words of reviewer 3
-
-> ... the notation in this paper is so dreadful that I considered declining to review it. If the notation is not thoroughly cleaned up in a revision, I will not review it again. I only begin to touch the surface in these comments.
-(...) The lack of consistency seems almost sadistic, as if it was done to purposively make even simple expressions inscrutable! 
-
-
-
-
----
-
-class: inverse, middle, center
-
-# Anyhow
-
-
-
-
----
-
-class: inverse, middle, center
-
-# Thing 2
-
-"Crossed random effects not really supported."
-
-
----
-
-class: inverse, middle, center
-
-# A Scalable Algorithm
-
-Laplace approximation, sparse matrices, and autodiff to the rescue
-
----
-
-# Likelihood
-
-- Transform latent variables through $\boldsymbol{\Lambda} \mathbf{u} = \boldsymbol{\zeta}$, where $\boldsymbol{\Lambda}^{T}\boldsymbol{\Lambda} = \boldsymbol{\Psi}$, so $\mathbf{u} \sim N(\mathbf{0}, \phi_{1} \mathbf{I})$. $\phi_{1}$ is a reference level, since the dispersion may differ between observations.
-
-- The marginal likelihood, integrating over $\mathbf{u} \in \mathbb{R}^{r}$ is
-
-$$L\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \boldsymbol{\phi}\right)  = \\ \left(2 \pi \phi_{1}\right)^{-r/2}  \int_{\mathbb{R}^{r}} \exp\left( g\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \boldsymbol{\phi}, \mathbf{u}\right) \right) \text{d} \mathbf{u}$$
-
-where
-
-$$g\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \boldsymbol{\phi}, \mathbf{u}\right) = \\ 
-\mathbf{y}^{T} \mathbf{W}\boldsymbol{\nu} - d\left(\boldsymbol{\nu}\right)^{T} \mathbf{W}\mathbf{1}_{n}  + c\left(\mathbf{y}, \boldsymbol{\phi}\right)^{T} \mathbf{1}_{n} - \left(2\phi_{1}\right)^{-1} \left\| \mathbf{u} \right\|^{2}$$
-
-- Just like a generalized linear mixed model, except that everything depends on the factor loadings and coefficients for regressions between latent variables. Doubly nonlinear in a sense.
-
-
-
-
----
-
-## Laplace Approximation
-
-- First goal, maximize the exponent in the integrand at fixed parameters.
-
-$$\tilde{\mathbf{u}} = \underset{\mathbf{u}}{\text{argmax}} \left\{ g\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \phi, \mathbf{u}\right) \right\}$$
-
-- Analytical expressions for gradient and Hessian
-
-$$\nabla g = \boldsymbol{\Lambda}^{T} \mathbf{Z}^{T} \mathbf{W}\left( \mathbf{y} - \boldsymbol{\mu} \right)  - \left(1/\phi_{1}\right)\mathbf{u}$$
-
-$$\mathbf{H}_{g} =-  \boldsymbol{\Lambda}^{T} \mathbf{Z}^{T} \mathbf{V}  \mathbf{Z} \boldsymbol{\Lambda} - \left(1/\phi_{1}\right) \mathbf{I}_{r}$$
-
-- Full Newton method:
-
-$$\nabla g^{(k)} \boldsymbol{\delta}^{(k)} = \mathbf{H}_{g}^{(k)}$$
-
-and then updating $\mathbf{u}^{(k+1)} = \mathbf{u}^{(k)} + \gamma \boldsymbol{\delta}^{(k)}$ for some adaptively chosen stepsize $\gamma$.
-
-
-
----
-
-## Laplace Approximation
-
-- Linear system
-
-$$\nabla g^{(k)} \boldsymbol{\delta}^{(k)} = \mathbf{H}_{g}^{(k)}$$
-
-- Hessian $\mathbf{H}_{g}^{(k)}$ is typically **really really sparse**. Sparse Cholesky factorization
-
-$$\mathbf{L}^{(k)} \mathbf{D}^{(k)} \mathbf{L}^{(k)}{}^{T} = \mathbf{P} \mathbf{H}_{g}^{(k)}\mathbf{P}^{T}$$
-- Fill-reducing permutation $\mathbf{P}$ only depends on location of structural zeros, so can be computed off-line.
-
-- The actual system we solve is
-
-$$\mathbf{L}^{(k)} \mathbf{D}^{(k)} \mathbf{L}^{(k)T} \mathbf{P} \boldsymbol{\delta}^{(k)} = \mathbf{P} \left( \boldsymbol{\Lambda}^{T} \mathbf{Z}^{T} \mathbf{W}^{(k)} \left( \mathbf{y} - \boldsymbol{\mu}^{(k)}\right)- (1/\phi_{1}^{(k)}) \mathbf{u}^{(k)}\right)$$
-
-
----
-
-## Log-Likelihood
-
-- Laplace approximation: plug in conditional modes $\tilde{\mathbf{u}}$ at convergence and update all other terms that depend on $\mathbf{u}$.
-
-- Laplace approximate marginal likelihood is
-
-$$\log L\left(\boldsymbol{\beta}, \boldsymbol{\Lambda}, \boldsymbol{\Gamma}, \boldsymbol{\lambda}, \mathbf{B}, \boldsymbol{\phi}\right) = \\ \mathbf{y}^{T} \mathbf{W}\boldsymbol{\nu} - d\left(\boldsymbol{\nu}\right)^{T} \mathbf{W}\mathbf{1}_{n}  + c\left(\mathbf{y}, \boldsymbol{\phi}\right)^{T} \mathbf{1}_{n} - \left(2\phi_{1}\right)^{-1} \left\| \tilde{\mathbf{u} }\right\|^{2} - (1/2)\log \text{tr}\left(\mathbf{D}\right)$$
-
-- Gradient not analytically tractable, but can be computed to machine precision using algorithmic differentiation.
-
-- Gradients are then used by the quasi-Newton method L-BFGS-B to find the maximum inside the feasible set.
-
-
----
-
-class: inverse, middle, center
-
-![](figures/newton.png)
-
-Isaac and his cousin Fred Quasi-Newton inventing the rainbow.
-
----
-
-class: inverse, middle, center
-
-
-# Thing 3
-
-Stata based. Limited availability in R.
-
-
----
-
-## Implementation
-
-- R package `galamm`, so far only at https://lcbc-uio.github.io/galamm/.
-
-- Supports a wide range of models, including
-
-  - Mixed response types
-  
-  - Crossed random effects
-  
-  - Semiparametric terms
-  
-  - Heteroscedasticity
-  
-
-- User-friendly API will come when numerics is settled.
-
-
----
-
-class: inverse, middle, center
-
-# Application Examples
-
-
----
-
-
-
-# Coupled Cognitive Change
-
-<center>
-<img src="figures/coupled_change.png" width=600>
-<br>
-<br>
-<br>
-<img src="figures/g_level_change.png" width=600>
-</center>
-
-
-
-
----
-
-# Coupled Cognitive Change
-
-
-
----
-
-# Effect of Socioeconomic Status on the Brain
-
-- A Lancet report has suggested that low socioeconomic status is a risk factor for late life dementia, through its impact on brain structure.
-
-- Lifespan brain development is pretty nonlinear. Example below shows volume of hippocampus. How does socioeconomic status interact with this curve?
-
-<center>
-<img src="figures/mri.png" width=400>
-</center>
-
----
-
-# Effect of Socioeconomic Status on the Brain
-
-
-.pull-left[
-
-- Latent socioeconomic status defined by income and education level. 
-
-- For children, parents' values were used.
-]
-.pull-right[
-![](figures/ses.png)
-]
-
----
-
-class: inverse, middle, center
-
-# Further Work
-
----
-
-## Further Work
-
-- Study the accuracy of Laplace approximation through importance sampling.
-
-- Smooth functions of latent variables. Leads to $\chi^{2}$ distributed random variables.
-
-- Optimize code and create descent API.
-
-- Utilize the framework to answer research questions in cognitive neuroscience.
-
-
-Interested in working with similar applications? Postdoc position will soon be announced. Contact me for details.
-
-
 
 
 
