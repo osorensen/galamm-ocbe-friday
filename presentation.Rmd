@@ -383,30 +383,7 @@ Stata based. Limited availability in R.
 
 class: inverse, middle, center
 
-# Application Examples
-
-
----
-
-
-
-# Coupled Cognitive Change
-
-<center>
-<img src="figures/coupled_change.png" width=600>
-<br>
-<br>
-<br>
-<img src="figures/g_level_change.png" width=600>
-</center>
-
-
-
-
----
-
-# Coupled Cognitive Change
-
+# Application Example
 
 
 ---
